@@ -60,6 +60,24 @@ Lang Type:
 ======================================================================
 # <rtc-template block="inport">
 
+	Name:        command
+	PortNumber:  0
+	Description: 
+	PortType: 
+	DataType:    RTC::TimedString
+	MaxOut: 
+	[Data Elements]
+		Name:
+		Type:            
+		Number:          
+		Semantics:       
+		Unit:            
+		Frequency:       
+		Operation Cycle: 
+		RangeLow:
+		RangeHigh:
+		DefaultValue:
+
 
 # </rtc-template>
 
@@ -137,6 +155,54 @@ Lang Type:
 		Description:     
 		Type:            short
 		DefaultValue:     30
+		Unit:            
+		Range:           
+		Constraint:      
+
+		Name:             transX
+		Description:     
+		Type:            double
+		DefaultValue:     0.0
+		Unit:            
+		Range:           
+		Constraint:      
+
+		Name:             transY
+		Description:     
+		Type:            double
+		DefaultValue:     0.0
+		Unit:            
+		Range:           
+		Constraint:      
+
+		Name:             transZ
+		Description:     
+		Type:            double
+		DefaultValue:     0.0
+		Unit:            
+		Range:           
+		Constraint:      
+
+		Name:             rotX
+		Description:     
+		Type:            double
+		DefaultValue:     0.0
+		Unit:            
+		Range:           
+		Constraint:      
+
+		Name:             rotY
+		Description:     
+		Type:            double
+		DefaultValue:     0.0
+		Unit:            
+		Range:           
+		Constraint:      
+
+		Name:             rotZ
+		Description:     
+		Type:            double
+		DefaultValue:     0.0
 		Unit:            
 		Range:           
 		Constraint:      

@@ -16,6 +16,7 @@
 
 // Service implementation headers
 // <rtc-template block="service_impl_h">
+#include "BasicDataTypeSVC_impl.h"
 #include "pointcloudSVC_impl.h"
 
 // </rtc-template>
@@ -258,6 +259,42 @@ class AzureKinectToPCTest
    * - DefaultValue: 30
    */
   short int m_cameraFps;
+  /*!
+   * 
+   * - Name:  transX
+   * - DefaultValue: 0.0
+   */
+  double m_transX;
+  /*!
+   * 
+   * - Name:  transY
+   * - DefaultValue: 0.0
+   */
+  double m_transY;
+  /*!
+   * 
+   * - Name:  transZ
+   * - DefaultValue: 0.0
+   */
+  double m_transZ;
+  /*!
+   * 
+   * - Name:  rotX
+   * - DefaultValue: 0.0
+   */
+  double m_rotX;
+  /*!
+   * 
+   * - Name:  rotY
+   * - DefaultValue: 0.0
+   */
+  double m_rotY;
+  /*!
+   * 
+   * - Name:  rotZ
+   * - DefaultValue: 0.0
+   */
+  double m_rotZ;
 
   // </rtc-template>
 
@@ -273,6 +310,10 @@ class AzureKinectToPCTest
 
   // DataOutPort declaration
   // <rtc-template block="outport_declare">
+  RTC::TimedString m_command;
+  /*!
+   */
+  RTC::OutPort<RTC::TimedString> m_commandOut;
   
   // </rtc-template>
 

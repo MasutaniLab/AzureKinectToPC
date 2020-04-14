@@ -21,6 +21,7 @@
 
 // Service Consumer stub headers
 // <rtc-template block="consumer_stub_h">
+#include "BasicDataTypeStub.h"
 #include "pointcloudStub.h"
 
 // </rtc-template>
@@ -30,6 +31,8 @@
 #include <rtm/CorbaPort.h>
 #include <rtm/DataInPort.h>
 #include <rtm/DataOutPort.h>
+
+#include <Eigen/Geometry>
 
 /*!
  * @class AzureKinectToPC
@@ -241,11 +244,51 @@ class AzureKinectToPC
    * - DefaultValue: 30
    */
   short int m_cameraFps;
+  /*!
+   * 
+   * - Name:  transX
+   * - DefaultValue: 0.0
+   */
+  double m_transX;
+  /*!
+   * 
+   * - Name:  transY
+   * - DefaultValue: 0.0
+   */
+  double m_transY;
+  /*!
+   * 
+   * - Name:  transZ
+   * - DefaultValue: 0.0
+   */
+  double m_transZ;
+  /*!
+   * 
+   * - Name:  rotX
+   * - DefaultValue: 0.0
+   */
+  double m_rotX;
+  /*!
+   * 
+   * - Name:  rotY
+   * - DefaultValue: 0.0
+   */
+  double m_rotY;
+  /*!
+   * 
+   * - Name:  rotZ
+   * - DefaultValue: 0.0
+   */
+  double m_rotZ;
 
   // </rtc-template>
 
   // DataInPort declaration
   // <rtc-template block="inport_declare">
+  RTC::TimedString m_command;
+  /*!
+   */
+  RTC::InPort<RTC::TimedString> m_commandIn;
   
   // </rtc-template>
 
