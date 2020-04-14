@@ -32,6 +32,8 @@
 #include <rtm/DataInPort.h>
 #include <rtm/DataOutPort.h>
 
+#include <string>
+#include <map>
 #include <Eigen/Geometry>
 #include <k4a/k4a.hpp>
 
@@ -335,6 +337,10 @@ class AzureKinectToPC
    k4a::device m_dev;
    k4a::transformation m_transformation;
 
+   std::map<std::string, k4a_depth_mode_t> m_depthModeMap;
+   std::map<short, k4a_fps_t> m_cameraFpsMap;
+   std::map<std::string, k4a_image_format_t> m_colorFormatMap;
+   std::map<std::string, k4a_color_resolution_t> m_colorResolutionMap;
 };
 
 

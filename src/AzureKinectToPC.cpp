@@ -133,7 +133,35 @@ RTC::ReturnCode_t AzureKinectToPC::onInitialize()
   bindParameter("rotY", m_rotY, "0.0");
   bindParameter("rotZ", m_rotZ, "0.0");
   // </rtc-template>
-  
+
+  m_depthModeMap = {
+    {"OFF", K4A_DEPTH_MODE_OFF},
+    {"NFOV_2X2BINNED", K4A_DEPTH_MODE_NFOV_2X2BINNED},
+    {"NFOV_UNBINNED", K4A_DEPTH_MODE_NFOV_UNBINNED},
+    {"WFOV_2X2BINNED", K4A_DEPTH_MODE_WFOV_2X2BINNED},
+    {"WFOV_UNBINNED", K4A_DEPTH_MODE_WFOV_UNBINNED},
+    {"PASSIVE_IR", K4A_DEPTH_MODE_PASSIVE_IR},
+  };
+  m_cameraFpsMap = {
+    {5, K4A_FRAMES_PER_SECOND_5},
+    {15, K4A_FRAMES_PER_SECOND_15},
+    {30, K4A_FRAMES_PER_SECOND_30},
+  };
+  m_colorFormatMap = {
+    {"MJPG", K4A_IMAGE_FORMAT_COLOR_MJPG},
+    {"NV12", K4A_IMAGE_FORMAT_COLOR_NV12},
+    {"YUY2", K4A_IMAGE_FORMAT_COLOR_YUY2},
+    {"BGRA32", K4A_IMAGE_FORMAT_COLOR_BGRA32},
+  };
+  m_colorResolutionMap = {
+    {"OFF", K4A_COLOR_RESOLUTION_OFF},
+    {"720P", K4A_COLOR_RESOLUTION_720P},
+    {"1080P", K4A_COLOR_RESOLUTION_1080P},
+    {"1440P", K4A_COLOR_RESOLUTION_1440P},
+    {"1536P", K4A_COLOR_RESOLUTION_1536P},
+    {"2160P", K4A_COLOR_RESOLUTION_2160P},
+    {"3072P", K4A_COLOR_RESOLUTION_3072P},
+  };
   return RTC::RTC_OK;
 }
 
@@ -162,30 +190,50 @@ RTC::ReturnCode_t AzureKinectToPC::onShutdown(RTC::UniqueId ec_id)
 RTC::ReturnCode_t AzureKinectToPC::onActivated(RTC::UniqueId ec_id)
 {
   RTC_INFO(("onActivated()"));
-  if (m_rotX == 0 && m_rotY == 0 && m_rotZ == 0 && m_transX == 0 && m_transY == 0 && m_transZ == 0) {
-    m_coordinateTransformation = false;
-  } else {
-    m_coordinateTransformation = true;
-    double radX = m_rotX * M_PI / 180;
-    double radY = m_rotY * M_PI / 180;
-    double radZ = m_rotZ * M_PI / 180;
-    m_transform
-      = Translation3f(m_transX, m_transY, m_transZ)
-      * AngleAxisf(radZ, Vector3f::UnitZ())
-      * AngleAxisf(radY, Vector3f::UnitY())
-      * AngleAxisf(radX, Vector3f::UnitX());
-    cout << "m_transform:" << endl << m_transform.matrix() << endl;
-  }
   try {
-    int device_id = 0;
+    if (m_rotX == 0 && m_rotY == 0 && m_rotZ == 0 && m_transX == 0 && m_transY == 0 && m_transZ == 0) {
+      m_coordinateTransformation = false;
+    } else {
+      m_coordinateTransformation = true;
+      float radX = m_rotX * M_PI / 180;
+      float radY = m_rotY * M_PI / 180;
+      float radZ = m_rotZ * M_PI / 180;
+      m_transform
+        = Translation3f(m_transX, m_transY, m_transZ)
+        * AngleAxisf(radZ, Vector3f::UnitZ())
+        * AngleAxisf(radY, Vector3f::UnitY())
+        * AngleAxisf(radX, Vector3f::UnitX());
+      cout << "m_transform:" << endl << m_transform.matrix() << endl;
+    }
+
     k4a_device_configuration_t config(K4A_DEVICE_CONFIG_INIT_DISABLE_ALL);
-    config.camera_fps = K4A_FRAMES_PER_SECOND_30;
-    config.depth_mode = K4A_DEPTH_MODE_WFOV_2X2BINNED;
-    config.color_format = K4A_IMAGE_FORMAT_COLOR_BGRA32;
-    config.color_resolution = K4A_COLOR_RESOLUTION_720P;
+    if (m_depthModeMap.count(m_depthMode) == 0) {
+      RTC_ERROR(("depthMode: %s は非対応", m_depthMode.c_str()));
+      return RTC::RTC_ERROR;
+    }    
+    config.depth_mode = m_depthModeMap[m_depthMode];
+
+    if (m_cameraFpsMap.count(m_cameraFps) == 0) {
+      RTC_ERROR(("cameraFps: %d は非対応", m_cameraFps));
+      return RTC::RTC_ERROR;
+    }
+    config.camera_fps = m_cameraFpsMap[m_cameraFps];
+
+    if (m_colorFormatMap.count(m_colorFormat) == 0) {
+      RTC_ERROR(("colorFormat: %s は非対応", m_colorFormat.c_str()));
+      return RTC::RTC_ERROR;
+    }
+    config.color_format = m_colorFormatMap[m_colorFormat];
+
+    if (m_colorResolutionMap.count(m_colorResolution) == 0) {
+      RTC_ERROR(("colorResolution: %s は非対応", m_colorResolution.c_str()));
+      return RTC::RTC_ERROR;
+    }
+    config.color_resolution = m_colorResolutionMap[m_colorResolution];
+
     config.synchronized_images_only = true;
 
-    m_dev = k4a::device::open(device_id);
+    m_dev = k4a::device::open(m_deviceId);
     m_dev.start_cameras(&config);
     k4a::calibration calibration = m_dev.get_calibration(config.depth_mode, config.color_resolution);
     m_transformation = k4a::transformation(calibration);

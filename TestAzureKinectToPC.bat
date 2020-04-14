@@ -24,7 +24,7 @@ set i=/localhost/%pythonScript%0.rtc
 
 :コンポーネント起動待ち
 :rtls-a
-echo %s%の起動待ち
+echo %a%の起動待ち
 timeout 1 /nobreak > nul
 rtls %a% > nul 2>&1
 if errorlevel 1 goto rtls-a
