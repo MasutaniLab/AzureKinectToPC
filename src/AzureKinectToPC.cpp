@@ -162,6 +162,72 @@ RTC::ReturnCode_t AzureKinectToPC::onShutdown(RTC::UniqueId ec_id)
 RTC::ReturnCode_t AzureKinectToPC::onActivated(RTC::UniqueId ec_id)
 {
   RTC_INFO(("onActivated()"));
+  if (m_rotX == 0 && m_rotY == 0 && m_rotZ == 0 && m_transX == 0 && m_transY == 0 && m_transZ == 0) {
+    m_coordinateTransformation = false;
+  } else {
+    m_coordinateTransformation = true;
+    double radX = m_rotX * M_PI / 180;
+    double radY = m_rotY * M_PI / 180;
+    double radZ = m_rotZ * M_PI / 180;
+    m_transform
+      = Translation3f(m_transX, m_transY, m_transZ)
+      * AngleAxisf(radZ, Vector3f::UnitZ())
+      * AngleAxisf(radY, Vector3f::UnitY())
+      * AngleAxisf(radX, Vector3f::UnitX());
+    cout << "m_transform:" << endl << m_transform.matrix() << endl;
+  }
+  try {
+    int device_id = 0;
+    k4a_device_configuration_t config(K4A_DEVICE_CONFIG_INIT_DISABLE_ALL);
+    config.camera_fps = K4A_FRAMES_PER_SECOND_30;
+    config.depth_mode = K4A_DEPTH_MODE_WFOV_2X2BINNED;
+    config.color_format = K4A_IMAGE_FORMAT_COLOR_BGRA32;
+    config.color_resolution = K4A_COLOR_RESOLUTION_720P;
+    config.synchronized_images_only = true;
+
+    m_dev = k4a::device::open(device_id);
+    m_dev.start_cameras(&config);
+    k4a::calibration calibration = m_dev.get_calibration(config.depth_mode, config.color_resolution);
+    m_transformation = k4a::transformation(calibration);
+
+    m_pc.type = "xyzrgb";
+    m_pc.fields.length(6);
+    m_pc.fields[0].name = "x";
+    m_pc.fields[0].offset = 0;
+    m_pc.fields[0].data_type = PointCloudTypes::FLOAT32;
+    m_pc.fields[0].count = 4;
+    m_pc.fields[1].name = "y";
+    m_pc.fields[1].offset = 4;
+    m_pc.fields[1].data_type = PointCloudTypes::FLOAT32;
+    m_pc.fields[1].count = 4;
+    m_pc.fields[2].name = "z";
+    m_pc.fields[2].offset = 8;
+    m_pc.fields[2].data_type = PointCloudTypes::FLOAT32;
+    m_pc.fields[2].count = 4;
+    m_pc.fields[3].name = "b";
+    m_pc.fields[3].offset = 12;
+    m_pc.fields[3].data_type = PointCloudTypes::UINT8;
+    m_pc.fields[3].count = 1;
+    m_pc.fields[4].name = "g";
+    m_pc.fields[4].offset = 13;
+    m_pc.fields[4].data_type = PointCloudTypes::UINT8;
+    m_pc.fields[4].count = 1;
+    m_pc.fields[5].name = "r";
+    m_pc.fields[5].offset = 14;
+    m_pc.fields[5].data_type = PointCloudTypes::UINT8;
+    m_pc.fields[5].count = 1;
+    m_pc.is_bigendian = false;
+    m_pc.point_step = 16;
+    m_pc.is_dense = false;
+
+    m_steadyStart = chrono::steady_clock::now();
+    m_fpsCounter = 0;
+    m_running = true;
+  } catch (...) {
+    RTC_ERROR(("An exception occurred in onActivated()"));
+    return RTC::RTC_ERROR;
+  }
+
   return RTC::RTC_OK;
 }
 
@@ -169,12 +235,115 @@ RTC::ReturnCode_t AzureKinectToPC::onActivated(RTC::UniqueId ec_id)
 RTC::ReturnCode_t AzureKinectToPC::onDeactivated(RTC::UniqueId ec_id)
 {
   RTC_INFO(("onDeactivated()"));
+  if (m_dev) {
+    m_transformation.destroy();
+    m_dev.close();
+  }
   return RTC::RTC_OK;
 }
 
 
 RTC::ReturnCode_t AzureKinectToPC::onExecute(RTC::UniqueId ec_id)
 {
+  if (m_commandIn.isNew()) {
+    m_commandIn.read();
+    string s = m_command.data;
+    if (s == "start") {
+      m_running = true;
+      RTC_INFO(("m_running = true"));
+    } else if (s == "stop") {
+      m_running = false;
+      RTC_INFO(("m_running = false"));
+    } else {
+      RTC_ERROR(("未知のコマンド: %s", s.c_str()));
+      return RTC::RTC_ERROR;
+    }
+  }
+  if (m_running) {
+    try {
+      k4a::capture capture;
+      if (!m_dev.get_capture(&capture, std::chrono::milliseconds(0))) {
+        return RTC::RTC_OK;
+      }
+
+      k4a::image depthImage = capture.get_depth_image();
+      if (depthImage == nullptr) {
+        RTC_ERROR(("キャプチャから深度画像の取得に失敗"));
+        return RTC::RTC_ERROR;
+      }
+
+      k4a::image colorImage = capture.get_color_image();
+      if (colorImage == nullptr) {
+        RTC_ERROR(("キャプチャからカラー画像の取得に失敗"));
+        return RTC::RTC_ERROR;
+      }
+
+      int color_image_width_pixels = colorImage.get_width_pixels();
+      int color_image_height_pixels = colorImage.get_height_pixels();
+
+      k4a::image transformed_depth_image = nullptr;
+      transformed_depth_image = k4a::image::create(K4A_IMAGE_FORMAT_DEPTH16,
+        color_image_width_pixels,
+        color_image_height_pixels,
+        color_image_width_pixels * (int)sizeof(uint16_t));
+
+      k4a::image point_cloud_image = nullptr;
+      point_cloud_image = k4a::image::create(K4A_IMAGE_FORMAT_CUSTOM,
+        color_image_width_pixels,
+        color_image_height_pixels,
+        color_image_width_pixels * 3 * (int)sizeof(int16_t));
+
+      m_transformation.depth_image_to_color_camera(depthImage, &transformed_depth_image);
+      m_transformation.depth_image_to_point_cloud(transformed_depth_image, K4A_CALIBRATION_TYPE_COLOR, &point_cloud_image);
+
+      int width = colorImage.get_width_pixels();
+      int height = colorImage.get_height_pixels();
+
+      m_pc.width = width;
+      m_pc.height = height;
+      m_pc.row_step = m_pc.point_step * m_pc.width;
+      m_pc.data.length(m_pc.height * m_pc.row_step);
+
+      int16_t* point_cloud_image_data = (int16_t*)(void*)point_cloud_image.get_buffer();
+      float* color_image_data = reinterpret_cast<float*>(colorImage.get_buffer());
+      
+      float* dst_cloud = (float*)m_pc.data.get_buffer();
+
+      for (int i = 0; i < width * height; i++) {
+        //XYZ
+        float x = point_cloud_image_data[3 * i + 0] / 1000.0f;
+        float y = point_cloud_image_data[3 * i + 1] / 1000.0f;
+        float z = point_cloud_image_data[3 * i + 2] / 1000.0f;
+        //XYZ
+        //座標変換の前にy軸とz軸を反転させる
+        Vector3f tmp(x, -y, -z);
+        if (m_coordinateTransformation) {
+          tmp = m_transform * tmp;
+        }
+
+        dst_cloud[0] = tmp(0);
+        dst_cloud[1] = tmp(1);
+        dst_cloud[2] = tmp(2);
+        dst_cloud[3] = color_image_data[i];
+        dst_cloud += 4;
+      }
+
+      m_pcOut.write();
+
+      m_fpsCounter++;
+      m_steadyEnd = chrono::steady_clock::now();
+      float timeSec = std::chrono::duration<double>(m_steadyEnd - m_steadyStart).count();
+      if (timeSec >= 1) {
+        RTC_INFO(("%f fps", m_fpsCounter / timeSec));
+        m_steadyStart = m_steadyEnd;
+        m_fpsCounter = 0;
+      }
+    } catch (const std::exception& e) {
+      RTC_ERROR((e.what()));
+      return RTC::RTC_ERROR;
+    }
+  }
+
   return RTC::RTC_OK;
 }
 

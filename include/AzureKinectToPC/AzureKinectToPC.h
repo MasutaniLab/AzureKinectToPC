@@ -33,6 +33,7 @@
 #include <rtm/DataOutPort.h>
 
 #include <Eigen/Geometry>
+#include <k4a/k4a.hpp>
 
 /*!
  * @class AzureKinectToPC
@@ -325,6 +326,14 @@ class AzureKinectToPC
   // <rtc-template block="private_operation">
   
   // </rtc-template>
+   bool m_coordinateTransformation;
+   Eigen::Affine3f m_transform;
+   int m_fpsCounter;
+   std::chrono::steady_clock::time_point m_steadyStart;
+   std::chrono::steady_clock::time_point m_steadyEnd;
+   bool m_running;
+   k4a::device m_dev;
+   k4a::transformation m_transformation;
 
 };
 
