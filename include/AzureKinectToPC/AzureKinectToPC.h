@@ -252,37 +252,37 @@ class AzureKinectToPC
    * - Name:  transX
    * - DefaultValue: 0.0
    */
-  double m_transX;
+  float m_transX;
   /*!
    * 
    * - Name:  transY
    * - DefaultValue: 0.0
    */
-  double m_transY;
+  float m_transY;
   /*!
    * 
    * - Name:  transZ
    * - DefaultValue: 0.0
    */
-  double m_transZ;
+  float m_transZ;
   /*!
    * 
    * - Name:  rotX
    * - DefaultValue: 0.0
    */
-  double m_rotX;
+  float m_rotX;
   /*!
    * 
    * - Name:  rotY
    * - DefaultValue: 0.0
    */
-  double m_rotY;
+  float m_rotY;
   /*!
    * 
    * - Name:  rotZ
    * - DefaultValue: 0.0
    */
-  double m_rotZ;
+  float m_rotZ;
 
   // </rtc-template>
 

@@ -57,7 +57,7 @@ static const char* azurekinecttopc_spec[] =
     "conf.__widget__.rotZ", "text",
     // Constraints
     "conf.__constraints__.depthMode", "(OFF,NFOV_2X2BINNED,NFOV_UNBINNED,WFOV_2X2BINNED,WFOV_UNBINNED,PASSIVE_IR)",
-    "conf.__constraints__.colorFormat", "(MJPG,NV12,YUY2,BGRA32,DEPTH16,CUSTOM8,CUSTOM16,CUSTOM)",
+    "conf.__constraints__.colorFormat", "(MJPG,NV12,YUY2,BGRA32)",
     "conf.__constraints__.colorResolution", "(OFF,720P,1080P,1440P,1536P,2160P,3072P)",
     "conf.__constraints__.cameraFps", "(5,15,30)",
 
@@ -66,12 +66,12 @@ static const char* azurekinecttopc_spec[] =
     "conf.__type__.colorFormat", "string",
     "conf.__type__.colorResolution", "string",
     "conf.__type__.cameraFps", "short",
-    "conf.__type__.transX", "double",
-    "conf.__type__.transY", "double",
-    "conf.__type__.transZ", "double",
-    "conf.__type__.rotX", "double",
-    "conf.__type__.rotY", "double",
-    "conf.__type__.rotZ", "double",
+    "conf.__type__.transX", "float",
+    "conf.__type__.transY", "float",
+    "conf.__type__.transZ", "float",
+    "conf.__type__.rotX", "float",
+    "conf.__type__.rotY", "float",
+    "conf.__type__.rotZ", "float",
 
     ""
   };
@@ -195,9 +195,10 @@ RTC::ReturnCode_t AzureKinectToPC::onActivated(RTC::UniqueId ec_id)
       m_coordinateTransformation = false;
     } else {
       m_coordinateTransformation = true;
-      float radX = m_rotX * M_PI / 180;
-      float radY = m_rotY * M_PI / 180;
-      float radZ = m_rotZ * M_PI / 180;
+      const float M_PIF = float(M_PI);
+      float radX = m_rotX * M_PIF / 180;
+      float radY = m_rotY * M_PIF / 180;
+      float radZ = m_rotZ * M_PIF / 180;
       m_transform
         = Translation3f(m_transX, m_transY, m_transZ)
         * AngleAxisf(radZ, Vector3f::UnitZ())
@@ -380,7 +381,7 @@ RTC::ReturnCode_t AzureKinectToPC::onExecute(RTC::UniqueId ec_id)
 
       m_fpsCounter++;
       m_steadyEnd = chrono::steady_clock::now();
-      float timeSec = std::chrono::duration<double>(m_steadyEnd - m_steadyStart).count();
+      double timeSec = std::chrono::duration<double>(m_steadyEnd - m_steadyStart).count();
       if (timeSec >= 1) {
         RTC_INFO(("%f fps", m_fpsCounter / timeSec));
         m_steadyStart = m_steadyEnd;

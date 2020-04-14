@@ -110,34 +110,6 @@
                                 </rtc:propertyIsEqualTo>
                             </rtc:ConstraintUnitType>
                         </rtc:Constraint>
-                        <rtc:Constraint>
-                            <rtc:ConstraintUnitType>
-                                <rtc:propertyIsEqualTo rtc:matchCase="false">
-                                    <rtc:Literal>DEPTH16</rtc:Literal>
-                                </rtc:propertyIsEqualTo>
-                            </rtc:ConstraintUnitType>
-                        </rtc:Constraint>
-                        <rtc:Constraint>
-                            <rtc:ConstraintUnitType>
-                                <rtc:propertyIsEqualTo rtc:matchCase="false">
-                                    <rtc:Literal>CUSTOM8</rtc:Literal>
-                                </rtc:propertyIsEqualTo>
-                            </rtc:ConstraintUnitType>
-                        </rtc:Constraint>
-                        <rtc:Constraint>
-                            <rtc:ConstraintUnitType>
-                                <rtc:propertyIsEqualTo rtc:matchCase="false">
-                                    <rtc:Literal>CUSTOM16</rtc:Literal>
-                                </rtc:propertyIsEqualTo>
-                            </rtc:ConstraintUnitType>
-                        </rtc:Constraint>
-                        <rtc:Constraint>
-                            <rtc:ConstraintUnitType>
-                                <rtc:propertyIsEqualTo rtc:matchCase="false">
-                                    <rtc:Literal>CUSTOM</rtc:Literal>
-                                </rtc:propertyIsEqualTo>
-                            </rtc:ConstraintUnitType>
-                        </rtc:Constraint>
                     </rtc:Or>
                 </rtc:ConstraintUnitType>
             </rtc:Constraint>
@@ -231,22 +203,22 @@
             </rtc:Constraint>
             <rtcExt:Properties rtcExt:value="radio" rtcExt:name="__widget__"/>
         </rtc:Configuration>
-        <rtc:Configuration xsi:type="rtcExt:configuration_ext" rtcExt:variableName="" rtc:unit="" rtc:defaultValue="0.0" rtc:type="double" rtc:name="transX">
+        <rtc:Configuration xsi:type="rtcExt:configuration_ext" rtcExt:variableName="" rtc:unit="" rtc:defaultValue="0.0" rtc:type="float" rtc:name="transX">
             <rtcExt:Properties rtcExt:value="text" rtcExt:name="__widget__"/>
         </rtc:Configuration>
-        <rtc:Configuration xsi:type="rtcExt:configuration_ext" rtcExt:variableName="" rtc:unit="" rtc:defaultValue="0.0" rtc:type="double" rtc:name="transY">
+        <rtc:Configuration xsi:type="rtcExt:configuration_ext" rtcExt:variableName="" rtc:unit="" rtc:defaultValue="0.0" rtc:type="float" rtc:name="transY">
             <rtcExt:Properties rtcExt:value="text" rtcExt:name="__widget__"/>
         </rtc:Configuration>
-        <rtc:Configuration xsi:type="rtcExt:configuration_ext" rtcExt:variableName="" rtc:unit="" rtc:defaultValue="0.0" rtc:type="double" rtc:name="transZ">
+        <rtc:Configuration xsi:type="rtcExt:configuration_ext" rtcExt:variableName="" rtc:unit="" rtc:defaultValue="0.0" rtc:type="float" rtc:name="transZ">
             <rtcExt:Properties rtcExt:value="text" rtcExt:name="__widget__"/>
         </rtc:Configuration>
-        <rtc:Configuration xsi:type="rtcExt:configuration_ext" rtcExt:variableName="" rtc:unit="" rtc:defaultValue="0.0" rtc:type="double" rtc:name="rotX">
+        <rtc:Configuration xsi:type="rtcExt:configuration_ext" rtcExt:variableName="" rtc:unit="" rtc:defaultValue="0.0" rtc:type="float" rtc:name="rotX">
             <rtcExt:Properties rtcExt:value="text" rtcExt:name="__widget__"/>
         </rtc:Configuration>
-        <rtc:Configuration xsi:type="rtcExt:configuration_ext" rtcExt:variableName="" rtc:unit="" rtc:defaultValue="0.0" rtc:type="double" rtc:name="rotY">
+        <rtc:Configuration xsi:type="rtcExt:configuration_ext" rtcExt:variableName="" rtc:unit="" rtc:defaultValue="0.0" rtc:type="float" rtc:name="rotY">
             <rtcExt:Properties rtcExt:value="text" rtcExt:name="__widget__"/>
         </rtc:Configuration>
-        <rtc:Configuration xsi:type="rtcExt:configuration_ext" rtcExt:variableName="" rtc:unit="" rtc:defaultValue="0.0" rtc:type="double" rtc:name="rotZ">
+        <rtc:Configuration xsi:type="rtcExt:configuration_ext" rtcExt:variableName="" rtc:unit="" rtc:defaultValue="0.0" rtc:type="float" rtc:name="rotZ">
             <rtcExt:Properties rtcExt:value="text" rtcExt:name="__widget__"/>
         </rtc:Configuration>
     </rtc:ConfigurationSet>

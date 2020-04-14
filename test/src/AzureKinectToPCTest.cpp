@@ -51,7 +51,7 @@ static const char* azurekinecttopc_spec[] =
     "conf.__widget__.rotZ", "text",
     // Constraints
     "conf.__constraints__.depthMode", "(OFF,NFOV_2X2BINNED,NFOV_UNBINNED,WFOV_2X2BINNED,WFOV_UNBINNED,PASSIVE_IR)",
-    "conf.__constraints__.colorFormat", "(MJPG,NV12,YUY2,BGRA32,DEPTH16,CUSTOM8,CUSTOM16,CUSTOM)",
+    "conf.__constraints__.colorFormat", "(MJPG,NV12,YUY2,BGRA32)",
     "conf.__constraints__.colorResolution", "(OFF,720P,1080P,1440P,1536P,2160P,3072P)",
     "conf.__constraints__.cameraFps", "(5,15,30)",
 
@@ -60,12 +60,12 @@ static const char* azurekinecttopc_spec[] =
     "conf.__type__.colorFormat", "string",
     "conf.__type__.colorResolution", "string",
     "conf.__type__.cameraFps", "short",
-    "conf.__type__.transX", "double",
-    "conf.__type__.transY", "double",
-    "conf.__type__.transZ", "double",
-    "conf.__type__.rotX", "double",
-    "conf.__type__.rotY", "double",
-    "conf.__type__.rotZ", "double",
+    "conf.__type__.transX", "float",
+    "conf.__type__.transY", "float",
+    "conf.__type__.transZ", "float",
+    "conf.__type__.rotX", "float",
+    "conf.__type__.rotY", "float",
+    "conf.__type__.rotZ", "float",
 
     ""
   };

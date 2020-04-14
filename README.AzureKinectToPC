@@ -161,7 +161,7 @@ Lang Type:
 
 		Name:             transX
 		Description:     
-		Type:            double
+		Type:            float
 		DefaultValue:     0.0
 		Unit:            
 		Range:           
@@ -169,7 +169,7 @@ Lang Type:
 
 		Name:             transY
 		Description:     
-		Type:            double
+		Type:            float
 		DefaultValue:     0.0
 		Unit:            
 		Range:           
@@ -177,7 +177,7 @@ Lang Type:
 
 		Name:             transZ
 		Description:     
-		Type:            double
+		Type:            float
 		DefaultValue:     0.0
 		Unit:            
 		Range:           
@@ -185,7 +185,7 @@ Lang Type:
 
 		Name:             rotX
 		Description:     
-		Type:            double
+		Type:            float
 		DefaultValue:     0.0
 		Unit:            
 		Range:           
@@ -193,7 +193,7 @@ Lang Type:
 
 		Name:             rotY
 		Description:     
-		Type:            double
+		Type:            float
 		DefaultValue:     0.0
 		Unit:            
 		Range:           
@@ -201,7 +201,7 @@ Lang Type:
 
 		Name:             rotZ
 		Description:     
-		Type:            double
+		Type:            float
 		DefaultValue:     0.0
 		Unit:            
 		Range:           
