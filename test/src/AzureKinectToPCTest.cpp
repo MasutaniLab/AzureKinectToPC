@@ -27,7 +27,7 @@ static const char* azurekinecttopc_spec[] =
     // Configuration variables
     "conf.default.deviceId", "0",
     "conf.default.depthMode", "WFOV_2X2BINNED",
-    "conf.default.colorFormat", "BGRA32",
+    "conf.default.alignTo", "depth",
     "conf.default.colorResolution", "720P",
     "conf.default.cameraFps", "30",
     "conf.default.transX", "0.0",
@@ -40,7 +40,7 @@ static const char* azurekinecttopc_spec[] =
     // Widget
     "conf.__widget__.deviceId", "text",
     "conf.__widget__.depthMode", "radio",
-    "conf.__widget__.colorFormat", "radio",
+    "conf.__widget__.alignTo", "radio",
     "conf.__widget__.colorResolution", "radio",
     "conf.__widget__.cameraFps", "radio",
     "conf.__widget__.transX", "text",
@@ -51,13 +51,13 @@ static const char* azurekinecttopc_spec[] =
     "conf.__widget__.rotZ", "text",
     // Constraints
     "conf.__constraints__.depthMode", "(OFF,NFOV_2X2BINNED,NFOV_UNBINNED,WFOV_2X2BINNED,WFOV_UNBINNED,PASSIVE_IR)",
-    "conf.__constraints__.colorFormat", "(MJPG,NV12,YUY2,BGRA32)",
+    "conf.__constraints__.alignTo", "(depth,color)",
     "conf.__constraints__.colorResolution", "(OFF,720P,1080P,1440P,1536P,2160P,3072P)",
     "conf.__constraints__.cameraFps", "(5,15,30)",
 
     "conf.__type__.deviceId", "short",
     "conf.__type__.depthMode", "string",
-    "conf.__type__.colorFormat", "string",
+    "conf.__type__.alignTo", "string",
     "conf.__type__.colorResolution", "string",
     "conf.__type__.cameraFps", "short",
     "conf.__type__.transX", "float",
@@ -116,7 +116,7 @@ RTC::ReturnCode_t AzureKinectToPCTest::onInitialize()
   // Bind variables and configuration variable
   bindParameter("deviceId", m_deviceId, "0");
   bindParameter("depthMode", m_depthMode, "WFOV_2X2BINNED");
-  bindParameter("colorFormat", m_colorFormat, "BGRA32");
+  bindParameter("alignTo", m_alignTo, "depth");
   bindParameter("colorResolution", m_colorResolution, "720P");
   bindParameter("cameraFps", m_cameraFps, "30");
   bindParameter("transX", m_transX, "0.0");

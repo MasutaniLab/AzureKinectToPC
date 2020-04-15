@@ -231,10 +231,10 @@ class AzureKinectToPC
   std::string m_depthMode;
   /*!
    * 
-   * - Name:  colorFormat
-   * - DefaultValue: BGRA32
+   * - Name:  alignTo
+   * - DefaultValue: depth
    */
-  std::string m_colorFormat;
+  std::string m_alignTo;
   /*!
    * 
    * - Name:  colorResolution
@@ -339,7 +339,6 @@ class AzureKinectToPC
 
    std::map<std::string, k4a_depth_mode_t> m_depthModeMap;
    std::map<short, k4a_fps_t> m_cameraFpsMap;
-   std::map<std::string, k4a_image_format_t> m_colorFormatMap;
    std::map<std::string, k4a_color_resolution_t> m_colorResolutionMap;
 };
 

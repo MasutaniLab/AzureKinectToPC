@@ -78,35 +78,21 @@
             </rtc:Constraint>
             <rtcExt:Properties rtcExt:value="radio" rtcExt:name="__widget__"/>
         </rtc:Configuration>
-        <rtc:Configuration xsi:type="rtcExt:configuration_ext" rtcExt:variableName="" rtc:unit="" rtc:defaultValue="BGRA32" rtc:type="string" rtc:name="colorFormat">
+        <rtc:Configuration xsi:type="rtcExt:configuration_ext" rtcExt:variableName="" rtc:unit="" rtc:defaultValue="depth" rtc:type="string" rtc:name="alignTo">
             <rtc:Constraint>
                 <rtc:ConstraintUnitType>
                     <rtc:Or>
                         <rtc:Constraint>
                             <rtc:ConstraintUnitType>
                                 <rtc:propertyIsEqualTo rtc:matchCase="false">
-                                    <rtc:Literal>MJPG</rtc:Literal>
+                                    <rtc:Literal>depth</rtc:Literal>
                                 </rtc:propertyIsEqualTo>
                             </rtc:ConstraintUnitType>
                         </rtc:Constraint>
                         <rtc:Constraint>
                             <rtc:ConstraintUnitType>
                                 <rtc:propertyIsEqualTo rtc:matchCase="false">
-                                    <rtc:Literal>NV12</rtc:Literal>
-                                </rtc:propertyIsEqualTo>
-                            </rtc:ConstraintUnitType>
-                        </rtc:Constraint>
-                        <rtc:Constraint>
-                            <rtc:ConstraintUnitType>
-                                <rtc:propertyIsEqualTo rtc:matchCase="false">
-                                    <rtc:Literal>YUY2</rtc:Literal>
-                                </rtc:propertyIsEqualTo>
-                            </rtc:ConstraintUnitType>
-                        </rtc:Constraint>
-                        <rtc:Constraint>
-                            <rtc:ConstraintUnitType>
-                                <rtc:propertyIsEqualTo rtc:matchCase="false">
-                                    <rtc:Literal>BGRA32</rtc:Literal>
+                                    <rtc:Literal>color</rtc:Literal>
                                 </rtc:propertyIsEqualTo>
                             </rtc:ConstraintUnitType>
                         </rtc:Constraint>

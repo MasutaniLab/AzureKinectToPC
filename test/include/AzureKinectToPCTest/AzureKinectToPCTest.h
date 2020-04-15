@@ -243,10 +243,10 @@ class AzureKinectToPCTest
   std::string m_depthMode;
   /*!
    * 
-   * - Name:  colorFormat
-   * - DefaultValue: BGRA32
+   * - Name:  alignTo
+   * - DefaultValue: depth
    */
-  std::string m_colorFormat;
+  std::string m_alignTo;
   /*!
    * 
    * - Name:  colorResolution

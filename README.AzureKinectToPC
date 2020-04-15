@@ -135,10 +135,10 @@ Lang Type:
 		Range:           
 		Constraint:      
 
-		Name:             colorFormat
+		Name:             alignTo
 		Description:     
 		Type:            string
-		DefaultValue:     BGRA32
+		DefaultValue:     depth
 		Unit:            
 		Range:           
 		Constraint:      

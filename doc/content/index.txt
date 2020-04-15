@@ -108,7 +108,7 @@ Parameter        Data type          Default Value    Effect
 ================ ================== ================ ======
 deviceId         short              0                
 depthMode        string             WFOV_2X2BINNED   
-colorFormat      string             BGRA32           
+alignTo          string             depth            
 colorResolution  string             720P             
 cameraFps        short              30               
 transX           float              0.0              

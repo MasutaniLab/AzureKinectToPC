@@ -33,7 +33,7 @@ static const char* azurekinecttopc_spec[] =
     // Configuration variables
     "conf.default.deviceId", "0",
     "conf.default.depthMode", "WFOV_2X2BINNED",
-    "conf.default.colorFormat", "BGRA32",
+    "conf.default.alignTo", "depth",
     "conf.default.colorResolution", "720P",
     "conf.default.cameraFps", "30",
     "conf.default.transX", "0.0",
@@ -46,7 +46,7 @@ static const char* azurekinecttopc_spec[] =
     // Widget
     "conf.__widget__.deviceId", "text",
     "conf.__widget__.depthMode", "radio",
-    "conf.__widget__.colorFormat", "radio",
+    "conf.__widget__.alignTo", "radio",
     "conf.__widget__.colorResolution", "radio",
     "conf.__widget__.cameraFps", "radio",
     "conf.__widget__.transX", "text",
@@ -57,13 +57,13 @@ static const char* azurekinecttopc_spec[] =
     "conf.__widget__.rotZ", "text",
     // Constraints
     "conf.__constraints__.depthMode", "(OFF,NFOV_2X2BINNED,NFOV_UNBINNED,WFOV_2X2BINNED,WFOV_UNBINNED,PASSIVE_IR)",
-    "conf.__constraints__.colorFormat", "(MJPG,NV12,YUY2,BGRA32)",
+    "conf.__constraints__.alignTo", "(depth,color)",
     "conf.__constraints__.colorResolution", "(OFF,720P,1080P,1440P,1536P,2160P,3072P)",
     "conf.__constraints__.cameraFps", "(5,15,30)",
 
     "conf.__type__.deviceId", "short",
     "conf.__type__.depthMode", "string",
-    "conf.__type__.colorFormat", "string",
+    "conf.__type__.alignTo", "string",
     "conf.__type__.colorResolution", "string",
     "conf.__type__.cameraFps", "short",
     "conf.__type__.transX", "float",
@@ -123,7 +123,7 @@ RTC::ReturnCode_t AzureKinectToPC::onInitialize()
   // Bind variables and configuration variable
   bindParameter("deviceId", m_deviceId, "0");
   bindParameter("depthMode", m_depthMode, "WFOV_2X2BINNED");
-  bindParameter("colorFormat", m_colorFormat, "BGRA32");
+  bindParameter("alignTo", m_alignTo, "depth");
   bindParameter("colorResolution", m_colorResolution, "720P");
   bindParameter("cameraFps", m_cameraFps, "30");
   bindParameter("transX", m_transX, "0.0");
@@ -146,12 +146,6 @@ RTC::ReturnCode_t AzureKinectToPC::onInitialize()
     {5, K4A_FRAMES_PER_SECOND_5},
     {15, K4A_FRAMES_PER_SECOND_15},
     {30, K4A_FRAMES_PER_SECOND_30},
-  };
-  m_colorFormatMap = {
-    {"MJPG", K4A_IMAGE_FORMAT_COLOR_MJPG},
-    {"NV12", K4A_IMAGE_FORMAT_COLOR_NV12},
-    {"YUY2", K4A_IMAGE_FORMAT_COLOR_YUY2},
-    {"BGRA32", K4A_IMAGE_FORMAT_COLOR_BGRA32},
   };
   m_colorResolutionMap = {
     {"OFF", K4A_COLOR_RESOLUTION_OFF},
@@ -220,11 +214,7 @@ RTC::ReturnCode_t AzureKinectToPC::onActivated(RTC::UniqueId ec_id)
     }
     config.camera_fps = m_cameraFpsMap[m_cameraFps];
 
-    if (m_colorFormatMap.count(m_colorFormat) == 0) {
-      RTC_ERROR(("colorFormat: %s は非対応", m_colorFormat.c_str()));
-      return RTC::RTC_ERROR;
-    }
-    config.color_format = m_colorFormatMap[m_colorFormat];
+    config.color_format = K4A_IMAGE_FORMAT_COLOR_BGRA32;
 
     if (m_colorResolutionMap.count(m_colorResolution) == 0) {
       RTC_ERROR(("colorResolution: %s は非対応", m_colorResolution.c_str()));
@@ -272,6 +262,9 @@ RTC::ReturnCode_t AzureKinectToPC::onActivated(RTC::UniqueId ec_id)
     m_steadyStart = chrono::steady_clock::now();
     m_fpsCounter = 0;
     m_running = true;
+  } catch (const std::exception& e) {
+    RTC_ERROR((e.what()));
+    return RTC::RTC_ERROR;
   } catch (...) {
     RTC_ERROR(("An exception occurred in onActivated()"));
     return RTC::RTC_ERROR;
@@ -389,6 +382,9 @@ RTC::ReturnCode_t AzureKinectToPC::onExecute(RTC::UniqueId ec_id)
       }
     } catch (const std::exception& e) {
       RTC_ERROR((e.what()));
+      return RTC::RTC_ERROR;
+    } catch (...) {
+      RTC_ERROR(("An exception occurred in onExecute()"));
       return RTC::RTC_ERROR;
     }
   }
