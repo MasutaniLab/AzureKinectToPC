@@ -156,6 +156,10 @@ RTC::ReturnCode_t AzureKinectToPC::onInitialize()
     {"2160P", K4A_COLOR_RESOLUTION_2160P},
     {"3072P", K4A_COLOR_RESOLUTION_3072P},
   };
+  m_alignToMap = {
+    {"depth", true},
+    {"color", false},
+  };
   return RTC::RTC_OK;
 }
 
@@ -221,6 +225,12 @@ RTC::ReturnCode_t AzureKinectToPC::onActivated(RTC::UniqueId ec_id)
       return RTC::RTC_ERROR;
     }
     config.color_resolution = m_colorResolutionMap[m_colorResolution];
+
+    if (m_alignToMap.count(m_alignTo) == 0) {
+      RTC_ERROR(("alignTo: %s は無効", m_alignTo.c_str()));
+      return RTC::RTC_ERROR;
+    }
+    m_alignToDepth = m_alignToMap[m_alignTo];
 
     config.synchronized_images_only = true;
 
@@ -320,42 +330,55 @@ RTC::ReturnCode_t AzureKinectToPC::onExecute(RTC::UniqueId ec_id)
         return RTC::RTC_ERROR;
       }
 
-      int color_image_width_pixels = colorImage.get_width_pixels();
-      int color_image_height_pixels = colorImage.get_height_pixels();
+      int width, height;
+      k4a::image newDepthImage = nullptr;
+      k4a::image newColorImage = nullptr;
+      if (m_alignToDepth) {
+        width = depthImage.get_width_pixels();
+        height = depthImage.get_height_pixels();
+        newDepthImage = depthImage;
+        newColorImage = k4a::image::create(
+          K4A_IMAGE_FORMAT_COLOR_BGRA32,
+          width, height, width * 4 * (int)sizeof(uint8_t));
+      } else {
+        width = colorImage.get_width_pixels();
+        height = colorImage.get_height_pixels();
+        newDepthImage = k4a::image::create(
+          K4A_IMAGE_FORMAT_DEPTH16,
+          width, height, width * (int)sizeof(uint16_t));
+        newColorImage = colorImage;
+      }
 
-      k4a::image transformed_depth_image = nullptr;
-      transformed_depth_image = k4a::image::create(K4A_IMAGE_FORMAT_DEPTH16,
-        color_image_width_pixels,
-        color_image_height_pixels,
-        color_image_width_pixels * (int)sizeof(uint16_t));
+      k4a::image pointCloudImage = nullptr;
+      pointCloudImage = k4a::image::create(K4A_IMAGE_FORMAT_CUSTOM,
+        width, height, width * 3 * (int)sizeof(int16_t));
 
-      k4a::image point_cloud_image = nullptr;
-      point_cloud_image = k4a::image::create(K4A_IMAGE_FORMAT_CUSTOM,
-        color_image_width_pixels,
-        color_image_height_pixels,
-        color_image_width_pixels * 3 * (int)sizeof(int16_t));
-
-      m_transformation.depth_image_to_color_camera(depthImage, &transformed_depth_image);
-      m_transformation.depth_image_to_point_cloud(transformed_depth_image, K4A_CALIBRATION_TYPE_COLOR, &point_cloud_image);
-
-      int width = colorImage.get_width_pixels();
-      int height = colorImage.get_height_pixels();
+      if (m_alignToDepth) {
+        m_transformation.color_image_to_depth_camera(
+          depthImage, colorImage, &newColorImage);
+        m_transformation.depth_image_to_point_cloud(
+          newDepthImage, K4A_CALIBRATION_TYPE_DEPTH, & pointCloudImage);
+      } else {
+        m_transformation.depth_image_to_color_camera(depthImage, &newDepthImage);
+        m_transformation.depth_image_to_point_cloud(
+          newDepthImage, K4A_CALIBRATION_TYPE_COLOR, &pointCloudImage);
+      }
 
       m_pc.width = width;
       m_pc.height = height;
       m_pc.row_step = m_pc.point_step * m_pc.width;
       m_pc.data.length(m_pc.height * m_pc.row_step);
 
-      int16_t* point_cloud_image_data = (int16_t*)(void*)point_cloud_image.get_buffer();
-      float* color_image_data = reinterpret_cast<float*>(colorImage.get_buffer());
+      int16_t* pointCloudImageData = (int16_t*)(void*)pointCloudImage.get_buffer();
+      float* newColorImageData = reinterpret_cast<float*>(newColorImage.get_buffer());
       
-      float* dst_cloud = (float*)m_pc.data.get_buffer();
+      float* dstCloud = (float*)m_pc.data.get_buffer();
 
       for (int i = 0; i < width * height; i++) {
         //XYZ
-        float x = point_cloud_image_data[3 * i + 0] / 1000.0f;
-        float y = point_cloud_image_data[3 * i + 1] / 1000.0f;
-        float z = point_cloud_image_data[3 * i + 2] / 1000.0f;
+        float x = pointCloudImageData[3 * i + 0] / 1000.0f;
+        float y = pointCloudImageData[3 * i + 1] / 1000.0f;
+        float z = pointCloudImageData[3 * i + 2] / 1000.0f;
         //XYZ
         //座標変換の前にy軸とz軸を反転させる
         Vector3f tmp(x, -y, -z);
@@ -363,11 +386,11 @@ RTC::ReturnCode_t AzureKinectToPC::onExecute(RTC::UniqueId ec_id)
           tmp = m_transform * tmp;
         }
 
-        dst_cloud[0] = tmp(0);
-        dst_cloud[1] = tmp(1);
-        dst_cloud[2] = tmp(2);
-        dst_cloud[3] = color_image_data[i];
-        dst_cloud += 4;
+        dstCloud[0] = tmp(0);
+        dstCloud[1] = tmp(1);
+        dstCloud[2] = tmp(2);
+        dstCloud[3] = newColorImageData[i];
+        dstCloud += 4;
       }
 
       m_pcOut.write();

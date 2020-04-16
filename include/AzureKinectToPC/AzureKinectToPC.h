@@ -336,10 +336,12 @@ class AzureKinectToPC
    bool m_running;
    k4a::device m_dev;
    k4a::transformation m_transformation;
+   bool m_alignToDepth;
 
    std::map<std::string, k4a_depth_mode_t> m_depthModeMap;
    std::map<short, k4a_fps_t> m_cameraFpsMap;
    std::map<std::string, k4a_color_resolution_t> m_colorResolutionMap;
+   std::map<std::string, bool> m_alignToMap;
 };
 
 
