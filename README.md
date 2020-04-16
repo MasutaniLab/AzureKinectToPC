@@ -166,7 +166,7 @@ rtc.confに`corba.args: -ORBgiopMaxMsgSize`の設定が必要です．
   - 1秒当たりの出力回数をプログラムで1秒間隔で計算．
 
 |alignTo|depthMode|colorResolution|cameraFps|単体実行 [fps]|組み合わせ実行*1[fps]|
-|:-:|:-:|--:|--:|--:|--:|--:|
+|:-:|:-:|--:|--:|--:|--:|
 |depth|NFOV_2X2BINNED|720P|30|30|30|
 |depth|NFOV_UNBINNED|720P|30|30|30|
 |depth|WFOV_2X2BINNED|720P|30|30|30|
