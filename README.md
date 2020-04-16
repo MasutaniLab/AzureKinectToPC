@@ -30,10 +30,10 @@ Choeonoidの深度センサのモデルに合わせるためにこのように�
 - [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page)をインストール．PCL AllInOneパッケージに付属のものでも構わない．
 - [Azure Kinect Sensor SDK download](https://docs.microsoft.com/ja-jp/azure/Kinect-dk/sensor-sdk-download)からWindows用インストーラ`Azure Kinect SDK X.X.X.exe` をダウンロードし実行．
 - 環境変数 
-  - `K4A_DIR=C:\Program Files\Azure Kinect SDK v1.4.0` を追加
+  - `K4A_DIR=C:\Program Files\Azure Kinect SDK vX.X.X` を追加（X.X.XはSDKのバージョン）．
   - `Path`の値の並びに`%K4A_DIR%\sdk\windows-desktop\amd64\release\bin`を追加．
 
-# ビルド
+## ビルド
 - [AzureKinectToPC](https://github.com/MasutaniLab/AzureKinectToPC)をクローン．
 - CMake
   - ビルドディレクトリはトップ直下の`build`
@@ -177,4 +177,3 @@ rtc.confに`corba.args: -ORBgiopMaxMsgSize`の設定が必要です．
 |color|WFOV_UNBINNED|720P|15|15|13-14|
 
 *1 同じPCでPointCloudViewerに接続し表示させながら実行．
-
