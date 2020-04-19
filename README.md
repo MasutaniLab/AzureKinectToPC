@@ -138,6 +138,7 @@ rtc.confに`corba.args: -ORBgiopMaxMsgSize`の設定が必要です．
   - 説明： 座標変換の回転x成分 [deg]
   - 型： float
   - デフォルト値： 0.0
+- rotY
   - 説明： 座標変換の回転y成分 [deg]
   - 型： float
   - デフォルト値： 0.0
