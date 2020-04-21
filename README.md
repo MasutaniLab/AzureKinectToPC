@@ -108,7 +108,9 @@ rtc.confに`corba.args: -ORBgiopMaxMsgSize`の設定が必要です．
   - デフォルト値： WFOV_2X2BINNED
 
 - alignTo
-  - 説明： color 深度画像の画素数をカラー画像に合わせる，depth カラー画像の画素数を深度画像に合わせる
+  - 説明： 位置合わせの方法
+    - color 深度画像の画素数をカラー画像に合わせる（k4a::transformation::depth_image_to_color_camera()）
+    - depth カラー画像の画素数を深度画像に合わせる（k4a::transformation::color_image_to_depth_camera()）
   - 型： string
   - デフォルト値： depth
 
@@ -126,26 +128,38 @@ rtc.confに`corba.args: -ORBgiopMaxMsgSize`の設定が必要です．
   - 説明： 座標変換の並進x成分 [m]
   - 型： float
   - デフォルト値： 0.0
+
 - transY
   - 説明： 座標変換の並進y成分 [m]
   - 型： float
   - デフォルト値： 0.0
+
 - transZ
   - 説明： 座標変換の並進z成分 [m]
   - 型： float
   - デフォルト値： 0.0
+
 - rotX
   - 説明： 座標変換の回転x成分 [deg]
   - 型： float
   - デフォルト値： 0.0
+
 - rotY
   - 説明： 座標変換の回転y成分 [deg]
   - 型： float
   - デフォルト値： 0.0
+
 - rotZ
   - 説明： 座標変換の回転z成分 [deg]
   - 型： float
   - デフォルト値： 0.0
+
+- noColorInvalid
+  - 説明： 色情報のない点の扱い．
+    - 0: 座標値そのまま
+    - 1: 無効（座標値NaN）
+  - 型： short
+  - デフォルト値： 1
 
 ## 既知の問題・TODO
 

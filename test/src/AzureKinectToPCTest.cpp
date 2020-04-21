@@ -36,6 +36,7 @@ static const char* azurekinecttopc_spec[] =
     "conf.default.rotX", "0.0",
     "conf.default.rotY", "0.0",
     "conf.default.rotZ", "0.0",
+    "conf.default.noColorInvalid", "1",
 
     // Widget
     "conf.__widget__.deviceId", "text",
@@ -49,11 +50,13 @@ static const char* azurekinecttopc_spec[] =
     "conf.__widget__.rotX", "text",
     "conf.__widget__.rotY", "text",
     "conf.__widget__.rotZ", "text",
+    "conf.__widget__.noColorInvalid", "radio",
     // Constraints
     "conf.__constraints__.depthMode", "(OFF,NFOV_2X2BINNED,NFOV_UNBINNED,WFOV_2X2BINNED,WFOV_UNBINNED,PASSIVE_IR)",
     "conf.__constraints__.alignTo", "(depth,color)",
     "conf.__constraints__.colorResolution", "(OFF,720P,1080P,1440P,1536P,2160P,3072P)",
     "conf.__constraints__.cameraFps", "(5,15,30)",
+    "conf.__constraints__.noColorInvalid", "(0,1)",
 
     "conf.__type__.deviceId", "short",
     "conf.__type__.depthMode", "string",
@@ -66,6 +69,7 @@ static const char* azurekinecttopc_spec[] =
     "conf.__type__.rotX", "float",
     "conf.__type__.rotY", "float",
     "conf.__type__.rotZ", "float",
+    "conf.__type__.noColorInvalid", "short",
 
     ""
   };
@@ -125,6 +129,7 @@ RTC::ReturnCode_t AzureKinectToPCTest::onInitialize()
   bindParameter("rotX", m_rotX, "0.0");
   bindParameter("rotY", m_rotY, "0.0");
   bindParameter("rotZ", m_rotZ, "0.0");
+  bindParameter("noColorInvalid", m_noColorInvalid, "1");
   // </rtc-template>
   
   return RTC::RTC_OK;

@@ -295,6 +295,12 @@ class AzureKinectToPCTest
    * - DefaultValue: 0.0
    */
   float m_rotZ;
+  /*!
+   * 
+   * - Name:  noColorInvalid
+   * - DefaultValue: 1
+   */
+  short int m_noColorInvalid;
 
   // </rtc-template>
 

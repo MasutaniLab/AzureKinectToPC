@@ -117,6 +117,7 @@ transZ           float              0.0
 rotX             float              0.0              
 rotY             float              0.0              
 rotZ             float              0.0              
+noColorInvalid   short              1                
 ================ ================== ================ ======
 
 Ports

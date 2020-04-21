@@ -12,8 +12,11 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <limits>
 using namespace std;
 using namespace Eigen;
+
+const float FLT_NAN = std::numeric_limits<float>::quiet_NaN();
 
 // Module specification
 // <rtc-template block="module_spec">
@@ -42,6 +45,7 @@ static const char* azurekinecttopc_spec[] =
     "conf.default.rotX", "0.0",
     "conf.default.rotY", "0.0",
     "conf.default.rotZ", "0.0",
+    "conf.default.noColorInvalid", "1",
 
     // Widget
     "conf.__widget__.deviceId", "text",
@@ -55,11 +59,13 @@ static const char* azurekinecttopc_spec[] =
     "conf.__widget__.rotX", "text",
     "conf.__widget__.rotY", "text",
     "conf.__widget__.rotZ", "text",
+    "conf.__widget__.noColorInvalid", "radio",
     // Constraints
     "conf.__constraints__.depthMode", "(OFF,NFOV_2X2BINNED,NFOV_UNBINNED,WFOV_2X2BINNED,WFOV_UNBINNED,PASSIVE_IR)",
     "conf.__constraints__.alignTo", "(depth,color)",
     "conf.__constraints__.colorResolution", "(OFF,720P,1080P,1440P,1536P,2160P,3072P)",
     "conf.__constraints__.cameraFps", "(5,15,30)",
+    "conf.__constraints__.noColorInvalid", "(0,1)",
 
     "conf.__type__.deviceId", "short",
     "conf.__type__.depthMode", "string",
@@ -72,6 +78,7 @@ static const char* azurekinecttopc_spec[] =
     "conf.__type__.rotX", "float",
     "conf.__type__.rotY", "float",
     "conf.__type__.rotZ", "float",
+    "conf.__type__.noColorInvalid", "short",
 
     ""
   };
@@ -132,6 +139,7 @@ RTC::ReturnCode_t AzureKinectToPC::onInitialize()
   bindParameter("rotX", m_rotX, "0.0");
   bindParameter("rotY", m_rotY, "0.0");
   bindParameter("rotZ", m_rotZ, "0.0");
+  bindParameter("noColorInvalid", m_noColorInvalid, "1");
   // </rtc-template>
 
   m_depthModeMap = {
@@ -374,23 +382,63 @@ RTC::ReturnCode_t AzureKinectToPC::onExecute(RTC::UniqueId ec_id)
       
       float* dstCloud = (float*)m_pc.data.get_buffer();
 
-      for (int i = 0; i < width * height; i++) {
-        //XYZ
-        float x = pointCloudImageData[3 * i + 0] / 1000.0f;
-        float y = pointCloudImageData[3 * i + 1] / 1000.0f;
-        float z = pointCloudImageData[3 * i + 2] / 1000.0f;
-        //XYZ
-        //座標変換の前にy軸とz軸を反転させる
-        Vector3f tmp(x, -y, -z);
-        if (m_coordinateTransformation) {
-          tmp = m_transform * tmp;
-        }
+      const uint32_t noColorInt = 0;
+      const float noColor = *reinterpret_cast<const float*>(&noColorInt);
 
-        dstCloud[0] = tmp(0);
-        dstCloud[1] = tmp(1);
-        dstCloud[2] = tmp(2);
-        dstCloud[3] = newColorImageData[i];
-        dstCloud += 4;
+      if (m_alignToDepth && m_noColorInvalid) {
+        //色情報のない点は無効扱い
+        for (int i = 0; i < width * height; i++) {
+          if (newColorImageData[i] == noColor) {
+            dstCloud[0] = FLT_NAN;
+            dstCloud[1] = FLT_NAN;
+            dstCloud[2] = FLT_NAN;
+          } else {
+            //XYZ
+            float x = pointCloudImageData[3 * i + 0] / 1000.0f;
+            float y = pointCloudImageData[3 * i + 1] / 1000.0f;
+            float z = pointCloudImageData[3 * i + 2] / 1000.0f;
+            //XYZ
+            //座標変換の前にy軸とz軸を反転させる
+            Vector3f tmp(x, -y, -z);
+            if (m_coordinateTransformation) {
+              tmp = m_transform * tmp;
+            }
+
+            dstCloud[0] = tmp(0);
+            dstCloud[1] = tmp(1);
+            dstCloud[2] = tmp(2);
+          }
+          dstCloud[3] = newColorImageData[i];
+          dstCloud += 4;
+        }
+      } else {
+        //色情報がない点の座標はそのまま
+        for (int i = 0; i < width * height; i++) {
+          //XYZ
+          float x = pointCloudImageData[3 * i + 0] / 1000.0f;
+          float y = pointCloudImageData[3 * i + 1] / 1000.0f;
+          float z = pointCloudImageData[3 * i + 2] / 1000.0f;
+          //XYZ
+          //座標変換の前にy軸とz軸を反転させる
+          Vector3f tmp(x, -y, -z);
+          if (m_coordinateTransformation) {
+            tmp = m_transform * tmp;
+          }
+
+          dstCloud[0] = tmp(0);
+          dstCloud[1] = tmp(1);
+          dstCloud[2] = tmp(2);
+          dstCloud[3] = newColorImageData[i];
+#if 0
+          //デバッグのため対応する色情報のない点を赤色にする
+          const uint32_t redInt = 0xff0000;
+          const float red = *reinterpret_cast<const float*>(&redInt);
+          if (newColorImageData[i] == noColor) {
+            dstCloud[3] = red;
+          }
+#endif
+          dstCloud += 4;
+        }
       }
 
       m_pcOut.write();

@@ -207,6 +207,14 @@ Lang Type:
 		Range:           
 		Constraint:      
 
+		Name:             noColorInvalid
+		Description:     
+		Type:            short
+		DefaultValue:     1
+		Unit:            
+		Range:           
+		Constraint:      
+
 # </rtc-template> 
 
 This software is developed at the National Institute of Advanced
